@@ -1,0 +1,66 @@
+---
+_schema-version: '3.1'
+ID: sales-order-maintenance-service
+version: 1.0.0
+description: "Projeto para estudo relacionado à criação de um serviço OData para
+  gerenciamento de ordens de venda utilizando SAP Cloud Application Programming
+  Model (CAP), SAP HANA Cloud e Node.js"
+parameters:
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm install --production
+        - npx -p @sap/cds-dk cds build --production
+        - npx rimraf gen/db/src/gen/data
+
+modules:
+  - name: sales-order-maintenance-service-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: npm-ci
+    provides:
+      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+        properties:
+          srv-url: ${default-url}
+    requires:
+      - name: sales-order-maintenance-service-db
+      - name: sales-order-maintenance-service-auth
+
+  - name: sales-order-maintenance-service-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: sales-order-maintenance-service-db
+
+resources:
+  - name: sales-order-maintenance-service-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana # or 'hanatrial' on trial landscapes
+      service-plan: hdi-shared
+
+  - name: sales-order-maintenance-service-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: sales-order-maintenance-service
+        tenant-mode: dedicated
+        role-collections:
+          - name: 'Manager'
+            description: Manage Sales Orders
+            role-template-references:
+              - $XSAPPNAME.Manager
+          - name: 'Viewer'
+            description: View Sales Orders
+            role-template-references:
+              - $XSAPPNAME.Viewer
