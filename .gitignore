@@ -1,4 +1,4 @@
-# CAP sales-order-maintenance-service
+# CAP sales-order-maintenance
 _out
 *.db
 connection.properties

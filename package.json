@@ -1,7 +1,7 @@
 {
-  "name": "sales-order-maintenance-service",
+  "name": "sales-order-maintenance",
   "version": "1.0.0",
-  "description": "Projeto para estudo relacionado à criação de um serviço OData para gerenciamento de ordens de venda utilizando SAP Cloud Application Programming Model (CAP), SAP HANA Cloud e Node.js",
+  "description": "Projeto para estudo relacionado à criação de uma aplicação para gerenciamento de ordens de venda utilizando SAP Cloud Application Programming Model (CAP), SAP HANA Cloud e Node.js",
   "repository": "<Add your repository here>",
   "license": "UNLICENSED",
   "private": true,

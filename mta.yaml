@@ -1,8 +1,8 @@
 ---
 _schema-version: '3.1'
-ID: sales-order-maintenance-service
+ID: sales-order-maintenance
 version: 1.0.0
-description: "Projeto para estudo relacionado à criação de um serviço OData para
+description: "Projeto para estudo relacionado à criação de uma aplicação para
   gerenciamento de ordens de venda utilizando SAP Cloud Application Programming
   Model (CAP), SAP HANA Cloud e Node.js"
 parameters:
@@ -16,7 +16,7 @@ build-parameters:
         - npx rimraf gen/db/src/gen/data
 
 modules:
-  - name: sales-order-maintenance-service-srv
+  - name: sales-order-maintenance-srv
     type: nodejs
     path: gen/srv
     parameters:
@@ -28,39 +28,39 @@ modules:
         properties:
           srv-url: ${default-url}
     requires:
-      - name: sales-order-maintenance-service-db
-      - name: sales-order-maintenance-service-auth
+      - name: sales-order-maintenance-db
+      - name: sales-order-maintenance-auth
 
-  - name: sales-order-maintenance-service-db-deployer
+  - name: sales-order-maintenance-db-deployer
     type: hdb
     path: gen/db
     parameters:
       buildpack: nodejs_buildpack
     requires:
-      - name: sales-order-maintenance-service-db
+      - name: sales-order-maintenance-db
 
 resources:
-  - name: sales-order-maintenance-service-db
+  - name: sales-order-maintenance-db
     type: com.sap.xs.hdi-container
     parameters:
       service: hana # or 'hanatrial' on trial landscapes
       service-plan: hdi-shared
 
-  - name: sales-order-maintenance-service-auth
+  - name: sales-order-maintenance-auth
     type: org.cloudfoundry.managed-service
     parameters:
       service: xsuaa
       service-plan: application
       path: ./xs-security.json
       config:
-        xsappname: sales-order-maintenance-service
+        xsappname: sales-order-maintenance
         tenant-mode: dedicated
         role-collections:
           - name: 'Manager'
-            description: Manage Sales Orders
+            description: Sales Orders Manager
             role-template-references:
               - $XSAPPNAME.Manager
           - name: 'Viewer'
-            description: View Sales Orders
+            description: Sales Orders Viewer
             role-template-references:
               - $XSAPPNAME.Viewer
