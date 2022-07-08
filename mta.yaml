@@ -3,7 +3,7 @@ _schema-version: '3.1'
 ID: sales-order-maintenance
 version: 1.0.0
 description: "Projeto para estudo relacionado à criação de uma aplicação para
-  gerenciamento de ordens de venda utilizando SAP Cloud Application Programming
+  gerenciamento de ordens de vendas utilizando SAP Cloud Application Programming
   Model (CAP), SAP HANA Cloud e Node.js"
 parameters:
   enable-parallel-deployments: true
@@ -11,9 +11,7 @@ build-parameters:
   before-all:
     - builder: custom
       commands:
-        - npm install --production
         - npx -p @sap/cds-dk cds build --production
-        - npx rimraf gen/db/src/gen/data
 
 modules:
   - name: sales-order-maintenance-srv
@@ -56,11 +54,11 @@ resources:
         xsappname: sales-order-maintenance
         tenant-mode: dedicated
         role-collections:
-          - name: 'Manager'
-            description: Sales Orders Manager
+          - name: 'Admin'
+            description: Administrator
             role-template-references:
-              - $XSAPPNAME.Manager
+              - $XSAPPNAME.Admin
           - name: 'Viewer'
-            description: Sales Orders Viewer
+            description: Viewer
             role-template-references:
-              - $XSAPPNAME.Viewer
+              - $XSAPPNAME.Viewer        

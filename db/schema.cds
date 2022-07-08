@@ -1,6 +1,6 @@
 namespace salesordermaintenance;
 
-using { managed, sap.common.CodeList } from '@sap/cds/common';
+using { managed } from '@sap/cds/common';
 
 entity UnitOfMeasure : managed {
     key code    : String(2);

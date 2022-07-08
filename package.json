@@ -4,6 +4,9 @@
   "description": "Projeto para estudo relacionado à criação de uma aplicação para gerenciamento de ordens de venda utilizando SAP Cloud Application Programming Model (CAP), SAP HANA Cloud e Node.js",
   "repository": "<Add your repository here>",
   "license": "UNLICENSED",
+  "engines": {
+    "node": "^16"
+  },
   "private": true,
   "dependencies": {
     "@sap/cds": "^5",
@@ -16,42 +19,34 @@
     "sqlite3": "^5.0.2"
   },
   "scripts": {
-    "start": "cds run"
-  },
-  "eslintConfig": {
-    "extends": "eslint:recommended",
-    "env": {
-      "es2020": true,
-      "node": true,
-      "jest": true,
-      "mocha": true
-    },
-    "globals": {
-      "SELECT": true,
-      "INSERT": true,
-      "UPDATE": true,
-      "DELETE": true,
-      "CREATE": true,
-      "DROP": true,
-      "CDL": true,
-      "CQL": true,
-      "CXL": true,
-      "cds": true
-    },
-    "rules": {
-      "no-console": "off",
-      "require-atomic-updates": "off"
-    }
+    "start": "cds run --profile production"
   },
   "cds": {
-    "requires": {
-      "db": {
-        "kind": "hana-cloud"
-      },
-      "uaa": {
-        "kind": "xsuaa",
-        "credentials": {}
+    "[development]": {
+      "requires": {
+        "db": {
+          "kind": "sqlite"
+        }
       }
+    },
+    "[production]": {
+      "requires": {
+        "db": {
+          "kind": "hana"
+        },
+        "uaa": {
+          "kind": "xsuaa",
+          "credentials": {}
+        },
+        "auth": {
+          "passport": {
+            "strategy": "JWT"
+          }
+        }
+      }
+    },
+    "hana": {
+      "deploy-format": "hdbtable"
     }
   }
 }
