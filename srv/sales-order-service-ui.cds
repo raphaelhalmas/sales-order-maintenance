@@ -1,27 +1,27 @@
 using SalesOrderService from './sales-order-service';
 
 annotate SalesOrderService.Material with {
-	number      @title: 'Material';
-	description @title: 'Description';
-    baseUnit    @title: 'Base Unit of Measure';
-    division    @title: 'Divison';
+	number      @title: '{i18n>Material.Number}';
+	description @title: '{i18n>Material.Description}';
+    baseUnit    @title: '{i18n>Material.BaseUnit}';
+    division    @title: '{i18n>Material.Division}';
 }
 
 annotate SalesOrderService.UnitOfMeasure with {
-    code        @title: 'Code';
-    description @title: 'Description';
+    code        @title: '{i18n>UnitOfMeasure.Code}';
+    description @title: '{i18n>UnitOfMeasure.Description}';
 }
 
 annotate SalesOrderService.Division with {
-    code        @title: 'Code';
-    description @title: 'Description';
+    code        @title: '{i18n>Division.Code}';
+    description @title: '{i18n>Division.Description}';
 }
 
 annotate SalesOrderService.Material with @(
 	UI: {
 		HeaderInfo: {
-			TypeName: 'Material',
-			TypeNamePlural: 'Materials',
+			TypeName: '{i18n>Material.UI.HeaderInfo.TypeName}',
+			TypeNamePlural: '{i18n>Material.UI.HeaderInfo.TypeNamePlural}',
 			Title: {
                 $Type : 'UI.DataField',
                 Value : number
@@ -38,7 +38,7 @@ annotate SalesOrderService.Material with @(
             {Value: division_code}
 		],
         Facets: [
-            {$Type: 'UI.ReferenceFacet', Label: 'General data', Target: '@UI.FieldGroup#GeneralData'}
+            {$Type: 'UI.ReferenceFacet', Label: '{i18n>Material.UI.Facets.Label}', Target: '@UI.FieldGroup#GeneralData'}
         ],
         FieldGroup#GeneralData: {
             Data: [
@@ -57,7 +57,7 @@ annotate SalesOrderService.Material with {
         Common: {
             Text: baseUnit.description, TextArrangement: #TextFirst,
             ValueList: {
-                Label: 'Base Unit of Measure',
+                Label: '{i18n>UnitOfMeasure.Common.ValueList.Label}',
                 CollectionPath: 'UnitOfMeasure',
                 Parameters: [
                     { 
@@ -78,7 +78,7 @@ annotate SalesOrderService.Material with {
         Common: {
             Text: division.description, TextArrangement: #TextFirst,
             ValueList: {
-                Label: 'Division',
+                Label: '{i18n>Division.Common.ValueList.Label}',
                 CollectionPath: 'Division',
                 Parameters: [
                     { 
@@ -99,8 +99,8 @@ annotate SalesOrderService.Material with {
 annotate SalesOrderService.UnitOfMeasure with @(
     UI: {
         HeaderInfo: {
-            TypeName: 'Unit of Measure',
-            TypeNamePlural: 'Unit of Measures',
+            TypeName: '{i18n>UnitOfMeasure.UI.HeaderInfo.TypeName}',
+            TypeNamePlural: '{i18n>UnitOfMeasure.UI.HeaderInfo.TypeNamePlural}',
             Title: {
                 $Type : 'UI.DataField',
                 Value : code
@@ -123,8 +123,8 @@ annotate SalesOrderService.UnitOfMeasure with @(
 annotate SalesOrderService.Division with @(
     UI: {
         HeaderInfo: {
-            TypeName: 'Division',
-            TypeNamePlural: 'Divisions',
+            TypeName: '{i18n>Division.UI.HeaderInfo.TypeName}',
+            TypeNamePlural: '{i18n>Division.UI.HeaderInfo.TypeNamePlural}',
             Title: {
                 $Type : 'UI.DataField',
                 Value : code
