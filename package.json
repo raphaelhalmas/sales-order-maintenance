@@ -14,10 +14,12 @@
     "passport": "^0.6.0"
   },
   "devDependencies": {
+    "@sap/ux-specification": "^1.102.1",
     "sqlite3": "^5.0.2"
   },
   "scripts": {
-    "start": "cds run --profile production"
+    "start": "cds run --profile production",
+    "undeploy": "cf undeploy sales-order-maintenance --delete-services --delete-service-keys"
   },
   "cds": {
     "[development]": {
@@ -46,5 +48,8 @@
     "hana": {
       "deploy-format": "hdbtable"
     }
-  }
+  },
+  "sapux": [
+    "app/material-maintenance"
+  ]
 }

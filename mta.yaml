@@ -1,64 +1,152 @@
----
-_schema-version: '3.1'
+_schema-version: "3.1"
 ID: sales-order-maintenance
+description:
+  Projeto para estudo relacionado à criação de uma aplicação para gerenciamento
+  de ordens de vendas utilizando SAP Cloud Application Programming Model (CAP), SAP
+  HANA Cloud e Node.js
 version: 1.0.0
-description: "Projeto para estudo relacionado à criação de uma aplicação para
-  gerenciamento de ordens de vendas utilizando SAP Cloud Application Programming
-  Model (CAP), SAP HANA Cloud e Node.js"
+
+modules:
+  - name: sales-order-maintenance-srv
+    type: nodejs
+    path: gen/srv
+    requires:
+      - name: sales-order-maintenance-db
+      - name: sales-order-maintenance-auth
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+    parameters:
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: npm-ci
+
+  - name: sales-order-maintenance-db-deployer
+    type: hdb
+    path: gen/db
+    requires:
+      - name: sales-order-maintenance-db
+    parameters:
+      buildpack: nodejs_buildpack
+
+  - name: sales-order-maintenance-destinations
+    type: com.sap.application.content
+    requires:
+      - name: sales-order-maintenance-auth
+        parameters:
+          service-key:
+            name: sales-order-maintenance-auth-key
+      - name: sales-order-maintenance-html5-repo-host
+        parameters:
+          service-key:
+            name: sales-order-maintenance-html5-repo-host-key
+      - name: srv-api
+      - name: sales-order-maintenance-destination
+        parameters:
+          content-target: true
+    parameters:
+      content:
+        instance:
+          destinations:
+            - Authentication: OAuth2UserTokenExchange
+              Name: sales-order-maintenance-app-srv
+              TokenServiceInstanceName: sales-order-maintenance-auth
+              TokenServiceKeyName: sales-order-maintenance-auth-key
+              URL: ~{srv-api/srv-url}
+              sap.cloud.service: sales-order-maintenance.service
+            - Name: sales-order-maintenance-html5-repo-host
+              ServiceInstanceName: sales-order-maintenance-html5-repo-host
+              ServiceKeyName: sales-order-maintenance-html5-repo-host-key
+              sap.cloud.service: sales-order-maintenance.service
+            - Authentication: OAuth2UserTokenExchange
+              Name: sales-order-maintenance-auth
+              ServiceInstanceName: sales-order-maintenance-auth
+              ServiceKeyName: sales-order-maintenance-auth-key
+              sap.cloud.service: sales-order-maintenance.service
+          existing_destinations_policy: update
+    build-parameters:
+      no-source: true
+
+  - name: sales-order-maintenance-app-content
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: sales-order-maintenance-html5-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - artifacts:
+            - materialmaintenance.zip
+          name: materialmaintenance
+          target-path: resources/
+
+  - name: materialmaintenance
+    type: html5
+    path: app/material-maintenance
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms: []
+
+resources:
+  - name: sales-order-maintenance-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+
+  - name: sales-order-maintenance-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      config:
+        role-collections:
+          - description: Administrator
+            name: Admin
+            role-template-references:
+              - $XSAPPNAME.Admin
+          - description: Viewer
+            name: Viewer
+            role-template-references:
+              - $XSAPPNAME.Viewer
+        tenant-mode: dedicated
+        xsappname: sales-order-maintenance
+      path: ./xs-security.json
+      service: xsuaa
+      service-plan: application
+
+  - name: sales-order-maintenance-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      config:
+        HTML5Runtime_enabled: true
+        init_data:
+          instance:
+            destinations:
+              - Authentication: NoAuthentication
+                Name: ui5
+                ProxyType: Internet
+                Type: HTTP
+                URL: https://ui5.sap.com
+            existing_destinations_policy: update
+      service: destination
+      service-plan: lite
+
+  - name: sales-order-maintenance-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
 parameters:
+  deploy_mode: html5-repo
   enable-parallel-deployments: true
 build-parameters:
   before-all:
     - builder: custom
       commands:
         - npx -p @sap/cds-dk cds build --production
-
-modules:
-  - name: sales-order-maintenance-srv
-    type: nodejs
-    path: gen/srv
-    parameters:
-      buildpack: nodejs_buildpack
-    build-parameters:
-      builder: npm-ci
-    provides:
-      - name: srv-api # required by consumers of CAP services (e.g. approuter)
-        properties:
-          srv-url: ${default-url}
-    requires:
-      - name: sales-order-maintenance-db
-      - name: sales-order-maintenance-auth
-
-  - name: sales-order-maintenance-db-deployer
-    type: hdb
-    path: gen/db
-    parameters:
-      buildpack: nodejs_buildpack
-    requires:
-      - name: sales-order-maintenance-db
-
-resources:
-  - name: sales-order-maintenance-db
-    type: com.sap.xs.hdi-container
-    parameters:
-      service: hana # or 'hanatrial' on trial landscapes
-      service-plan: hdi-shared
-
-  - name: sales-order-maintenance-auth
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: xsuaa
-      service-plan: application
-      path: ./xs-security.json
-      config:
-        xsappname: sales-order-maintenance
-        tenant-mode: dedicated
-        role-collections:
-          - name: 'Admin'
-            description: Administrator
-            role-template-references:
-              - $XSAPPNAME.Admin
-          - name: 'Viewer'
-            description: Viewer
-            role-template-references:
-              - $XSAPPNAME.Viewer        
