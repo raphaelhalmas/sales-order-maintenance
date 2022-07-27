@@ -1,3 +1,11 @@
 {
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "SALES",
+      "database": "sqlite.db"
+    }
+  ]
 }
