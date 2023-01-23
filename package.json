@@ -7,21 +7,24 @@
   },
   "private": true,
   "dependencies": {
-    "@sap/cds": "^5",
-    "@sap/xssec": "^3.2.13",
+    "@sap/cds": "^6",
+    "@sap/xssec": "^3.2.17",
     "express": "^4",
-    "hdb": "^0.19.0",
+    "hdb": "^0.19.5",
     "passport": "^0.6.0"
   },
   "devDependencies": {
-    "@sap/ux-specification": "^1.102.1",
-    "sqlite3": "^5.0.2"
+    "@sap/ux-specification": "^1.102.15",
+    "sqlite3": "^5.0.4"
   },
   "scripts": {
     "start": "cds run --profile production",
     "undeploy": "cf undeploy sales-order-maintenance --delete-services --delete-service-keys"
   },
   "cds": {
+    "i18n": {
+      "default_language": "en"
+    },
     "[development]": {
       "requires": {
         "db": {
